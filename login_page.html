@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<link rel="stylesheet" href="style-login.css">
+<script type="text/javascript" >
+          function createUser() {
+
+                    fetch('/create_user', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ id: id, name: name, guthaben: guthaben })
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('Benutzer erfolgreich erstellt.');
+                        } else {
+                            alert('Fehler beim Erstellen des Benutzers.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Fehler:', error);
+                    });
+          }
+
+        function updateGuthaben() {
+            fetch('/update_guthaben', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: id, neues_guthaben: neues_guthaben })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Guthaben erfolgreich aktualisiert.');
+                } else {
+                    alert('Fehler beim Aktualisieren des Guthabens.');
+                }
+            })
+            .catch(error => {
+                console.error('Fehler:', error);
+            });
+        }
+
+        async function checkIfUserExists(id) {
+  const response = await fetch(`http://127.0.0.1:8000/check_if_user_exists?id=${id}`);
+  const data = await response.json();
+  return data.exists;
+}
+
+    function getNameById() {
+        fetch(`http://127.0.0.1:8000/check_if_user_exists/${id}`)
+        .then(response => response.text())
+        .then(data => {
+            if (data) {
+                alert(`Der Name des Benutzers lautet: ${data}`);
+            } else {
+                alert('Der Benutzer existiert nicht.');
+            }
+        })
+        .catch(error => {
+            console.error('Fehler:', error);
+        });
+    }
+
+    function getGuthabenById() {
+        fetch(`http://127.0.0.1:8000/get_guthaben_by_id?id=${id}`)
+        .then(response => response.text())
+        .then(data => {
+            if (data) {
+                alert(`Das Guthaben des Benutzers beträgt: ${data}`);
+            } else {
+                alert('Der Benutzer existiert nicht.');
+            }
+        })
+        .catch(error => {
+            console.error('Fehler:', error);
+        });
+    }
+
+     async function userCheck(){
+        var id = document.getElementById("eingabe").value;
+        const x = await checkIfUserExists(id);
+        console.log("userCheck: " +x);
+        if(x== true){
+            sessionStorage.setItem('userId', id);
+            window.location.href = "main.html";
+        }
+    }
+
+    function onload_function(){
+        sessionStorage.setItem('admin_status', false);
+          }
+</script>
+<body onload="onload_function()">
+  <div class="container">
+    <div class="header">
+        <div class="img">
+
+        </div>
+    </div>
+    <div class="input">
+        <input placeholder="Chip-ID" id="eingabe" type="number"></input>
+    </div>
+
+    <div class="button">
+        <button id="knopf" onclick="userCheck()">
+            Login!
+        </button>
+    </div>
+  </div>
+
+</body>
+</html>

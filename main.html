@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="style-main.css">
+</head>
+<script type="text/javascript">
+    async function getNameById(id) {
+      const response = await fetch(`http://127.0.0.1:8000/get_name_by_id?id=${id}`);
+      const data = await response.json();
+      let name = data.name;
+      return name;
+}
+
+    async function getGuthabenById(id) {
+      const response = await fetch(`http://127.0.0.1:8000/get_guthaben_by_id?id=${id}`);
+      const data = await response.json();
+      return data.guthaben;
+}
+function fillFieldWithInfo(){
+      var id = sessionStorage.getItem('userId');
+      console.log("userId: " + id);
+      console.log("id_type"+ typeof(id));
+      var guthaben = getGuthabenById(id);
+      var name = getNameById(id);
+      var field = document.getElementById('userinfo');
+      field.textContent += 'ID: ' + id;
+      field += name;
+      field += 'aktuelles Guthaben: ' + guthaben;
+      field += "";
+      console.log("fbdh");
+}
+
+  function onloadFunction() {
+    const userId = sessionStorage.getItem('userId');
+    console.log("userid: " + userId);
+    console.log("userid: " + userId);
+    fillFieldWithInfo();
+  }
+
+  function logout(){
+    window.location.href = "login_page.html";
+    sessionStorage.clear('userId');
+    sessionStorage.clear('admin_status');
+
+
+  }
+</script>
+<body onload="onloadFunction()">
+  <div class="container">
+    <div class="header">
+      <div class="img"></div>
+    </div>
+    <div class="register">
+      <button id="knopf" onclick="">Benutzer registrieren!</button>
+    </div>
+    <div class="userinfo" id="userinfo">
+      Benutzerinformationen:
+    </div>
+    <div class="fill">
+      <button id="knopf" onclick="">Flasche füllen!</button>
+    </div>
+    <div class="logout">
+      <button id="knopf" onclick="logout()">Logout!</button>
+    </div>
+    <div class="guthaben-aufladen">
+      <button id="knopf" onclick="">Guthaben aufladen!</button>
+    </div>
+  </div>
+</body>
+</html>
