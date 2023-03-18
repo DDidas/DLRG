@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create User</title>
+</head>
+<link rel="stylesheet" href="style-register.css">
+<script type="text/javascript" >
+async function createUser(){
+var id = document.getElementById("id").value;
+var name = document.getElementById("name").value;
+var guthaben = document.getElementById("guthaben").value;
+var admin = document.getElementById("admin").value;
+admin = (admin == "JA") ? 1 : 0; // Umwandlung in Ganzzahl
+    const response = await fetch('http://127.0.0.1:8000/create_user', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        "id": id,
+        "name": name,
+        "guthaben": guthaben,
+        "admin": admin
+    })
+});
+
+if(response.ok) {
+    const data = await response.json();
+    alert(data.message);
+    window.location.href = "main.html";
+} else {
+    alert("Error creating user");
+}
+}
+
+function cancel(){
+    window.location.href = "main.html";
+  }
+</script>
+<body>
+  <div class="container">
+    <div class="header">
+        <div class="img">
+                </div>
+</div>
+<div class="input">
+    <input placeholder="ID" id="id" class="eingabe" type="number" autofocus></input>
+    <input placeholder="Name" id="name" class="eingabe" type="text"></input>
+    <input placeholder="Guthaben" id="guthaben" class="eingabe" type="number"></input>
+    <label for="admin" style="color: #ffed00; font-size: 200%">Admin:</label>
+    <select id="admin" class="auswahl">
+        <option value="NEIN">NEIN</option>
+        <option value="JA">JA</option>
+    </select>
+</div>
+
+<div class="button1">
+    <button id="knopf" class="button" onclick="createUser()">
+        Erstelle Benutzer!
+    </button>
+</div>
+      <div class="button2">
+    <button id="knopf" class="button" onclick="cancel()">
+        Zurück!
+    </button>
+</div>
+</div>
+</body>
+</html>

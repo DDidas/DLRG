@@ -47,10 +47,31 @@
             });
         }
 
+        function setAdminById(id) {
+              const request = new XMLHttpRequest();
+              request.open("GET", `http://127.0.0.1:8000/get_adminstatus_by_id?id=${id}`, false); // dritter Parameter auf false setzt den Request auf synchron
+              request.send();
+              if (request.status === 200) {
+                const response = JSON.parse(request.responseText);
+                console.log('admin_status: '+response.admin);
+                if (response.admin !== null) {
+                    if (response.admin == 1){
+                        sessionStorage.setItem('admin_status', true)
+                    }
+                } else {
+                  return "Guthaben nicht gefunden";
+                }
+              } else {
+                console.error(`Fehler beim Abrufen des Guthabens: ${request.status}`);
+                return "Fehler beim Abrufen des Guthabens";
+              }
+}
+
         async function checkIfUserExists(id) {
-  const response = await fetch(`http://127.0.0.1:8000/check_if_user_exists?id=${id}`);
-  const data = await response.json();
-  return data.exists;
+          const response = await fetch(`http://127.0.0.1:8000/check_if_user_exists?id=${id}`);
+          const data = await response.json();
+          setAdminById(id);
+          return data.exists;
 }
 
     function getNameById() {
@@ -89,6 +110,7 @@
         console.log("userCheck: " +x);
         if(x== true){
             sessionStorage.setItem('userId', id);
+            console.log('bvsnihjbd: ' +sessionStorage.getItem('admin_status'))
             window.location.href = "main.html";
         }
     }
@@ -105,7 +127,7 @@
         </div>
     </div>
     <div class="input">
-        <input placeholder="Chip-ID" id="eingabe" type="number"></input>
+        <input placeholder="Chip-ID" id="eingabe" type="number" autofocus></input>
     </div>
 
     <div class="button">

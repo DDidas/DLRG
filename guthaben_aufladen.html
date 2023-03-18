@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Guthaben aktualisieren</title>
+</head>
+<link rel="stylesheet" href="style-login.css">
+<script type="text/javascript">
+
+    function getGuthabenById(id) {
+        const request = new XMLHttpRequest();
+        request.open("GET", `http://127.0.0.1:8000/get_guthaben_by_id?id=${id}`, false); // dritter Parameter auf false setzt den Request auf synchron
+        request.send();
+        if (request.status === 200) {
+            const response = JSON.parse(request.responseText);
+            if (response.guthaben !== null) {
+                return response.guthaben.toString();
+            } else {
+                return "Guthaben nicht gefunden";
+            }
+        } else {
+            console.error(`Fehler beim Abrufen des Guthabens: ${request.status}`);
+            return "Fehler beim Abrufen des Guthabens";
+        }
+    }
+
+
+    async function updateGuthaben() {
+        const preis = parseFloat(document.getElementById("eingabe").value);
+        const userId = sessionStorage.getItem('userId');
+        const currentGuthaben = await getGuthabenById(userId);
+        const neuesGuthaben = (parseFloat(currentGuthaben) + parseFloat(preis)).toFixed(2).toString().replace(',', '.');
+        console.log("preis: " + preis + " currentGuthaben: " + currentGuthaben + " neuesGuthaben: " + neuesGuthaben);
+        try {
+            const response = await fetch('http://127.0.0.1:8000/update_guthaben', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({id: userId, neues_guthaben: neuesGuthaben})
+            });
+            if (response.ok) {
+                console.log("GNJWNJ");
+                window.location.href="main.html";
+            } else {
+                alert('Fehler beim Aktualisieren des Guthabens.');
+            }
+        } catch (error) {
+            console.error(`Fehler beim Aktualisieren des Guthabens: ${error}`);
+            alert('Fehler beim Aktualisieren des Guthabens.');
+        }
+    }
+
+
+</script>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="img">
+
+        </div>
+    </div>
+    <div class="input">
+        <input id="eingabe" type="number" min="0" step="0.01" placeholder="Betrag eingeben"></input>
+    </div>
+    <div class="button">
+        <button id="knopf4" onclick="updateGuthaben()">
+            Guthaben aufladen!
+        </button>
+    </div>
+</div>
+</body>
+</html>
