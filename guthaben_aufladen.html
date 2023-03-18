@@ -26,11 +26,21 @@
 
 
     async function updateGuthaben() {
-        const preis = parseFloat(document.getElementById("eingabe").value);
-        const userId = sessionStorage.getItem('userId');
+        const preisInput = document.getElementById("eingabe");
+        const userIdInput = document.getElementById("userId");
+        const preis = parseFloat(preisInput.value);
+        const userId = userIdInput.value;
+
+        if (isNaN(preis)) { // check if preis is a valid number and greater than zero
+            alert('Bitte geben Sie eine gültige Zahl ein.');
+            preisInput.focus();
+            return;
+        }
+
         const currentGuthaben = await getGuthabenById(userId);
         const neuesGuthaben = (parseFloat(currentGuthaben) + parseFloat(preis)).toFixed(2).toString().replace(',', '.');
         console.log("preis: " + preis + " currentGuthaben: " + currentGuthaben + " neuesGuthaben: " + neuesGuthaben);
+
         try {
             const response = await fetch('http://127.0.0.1:8000/update_guthaben', {
                 method: 'PUT',
@@ -40,8 +50,7 @@
                 body: JSON.stringify({id: userId, neues_guthaben: neuesGuthaben})
             });
             if (response.ok) {
-                console.log("GNJWNJ");
-                window.location.href="main.html";
+                window.location.href = "main.html";
             } else {
                 alert('Fehler beim Aktualisieren des Guthabens.');
             }
@@ -61,8 +70,10 @@
         </div>
     </div>
     <div class="input">
-        <input id="eingabe" type="number" min="0" step="0.01" placeholder="Betrag eingeben"></input>
+        <input class="eingabe" id="eingabe" type="number" min="0" step="0.01" placeholder="Betrag eingeben"></input>
+        <input class="eingabe" id="userId" type="text" placeholder="ID eingeben"></input>
     </div>
+
     <div class="button">
         <button id="knopf4" onclick="updateGuthaben()">
             Guthaben aufladen!

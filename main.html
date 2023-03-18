@@ -7,101 +7,101 @@
 </head>
 <script type="text/javascript">
     function getNameById(id) {
-      const request = new XMLHttpRequest();
-      request.open("GET", `http://127.0.0.1:8000/get_name_by_id?id=${id}`, false); // dritter Parameter auf false setzt den Request auf synchron
-      request.send();
-      if (request.status === 200) {
-        const response = JSON.parse(request.responseText);
-        if (response.name !== null) {
-          return response.name.toString();
+        const request = new XMLHttpRequest();
+        request.open("GET", `http://127.0.0.1:8000/get_name_by_id?id=${id}`, false); // dritter Parameter auf false setzt den Request auf synchron
+        request.send();
+        if (request.status === 200) {
+            const response = JSON.parse(request.responseText);
+            if (response.name !== null) {
+                return response.name.toString();
+            } else {
+                return "Name nicht gefunden";
+            }
         } else {
-          return "Name nicht gefunden";
+            console.error(`Fehler beim Abrufen des Namens: ${request.status}`);
+            return "Fehler beim Abrufen des Namens";
         }
-      } else {
-        console.error(`Fehler beim Abrufen des Namens: ${request.status}`);
-        return "Fehler beim Abrufen des Namens";
-      }
-}
-
-  function getGuthabenById(id) {
-    const request = new XMLHttpRequest();
-    request.open("GET", `http://127.0.0.1:8000/get_guthaben_by_id?id=${id}`, false); // dritter Parameter auf false setzt den Request auf synchron
-    request.send();
-    if (request.status === 200) {
-      const response = JSON.parse(request.responseText);
-      if (response.guthaben !== null) {
-        return response.guthaben.toString();
-      } else {
-        return "Guthaben nicht gefunden";
-      }
-    } else {
-      console.error(`Fehler beim Abrufen des Guthabens: ${request.status}`);
-      return "Fehler beim Abrufen des Guthabens";
     }
-}
 
-
-
-
-function fillFieldWithInfo(){
-      var id = sessionStorage.getItem('userId');
-      var guthaben = getGuthabenById(id);
-      var name = getNameById(id);
-      var field = document.getElementById('userinfo_id');
-      field.textContent += 'ID: ' + id;
-      var field = document.getElementById('userinfo_name');
-      field.textContent += 'Name: '+name;
-      var field = document.getElementById('userinfo_guthaben');
-      field.textContent += 'aktuelles Guthaben: ' + guthaben;
-      field.textContent += "";
-}
-
-  function onloadFunction() {
-    const userId = sessionStorage.getItem('userId');
-    console.log("userid:"+ userId);
-    console.log("adminstatus: " + sessionStorage.getItem('admin_status'));
-    fillFieldWithInfo();
-    if(sessionStorage.getItem('admin_status').toString() === 'false'){
-        const knopf1 = document.getElementById('turnoff1');
-        const knopf2 = document.getElementById('turnoff2');
-        knopf1.disabled = true;
-        knopf2.disabled = true;
+    function getGuthabenById(id) {
+        const request = new XMLHttpRequest();
+        request.open("GET", `http://127.0.0.1:8000/get_guthaben_by_id?id=${id}`, false); // dritter Parameter auf false setzt den Request auf synchron
+        request.send();
+        if (request.status === 200) {
+            const response = JSON.parse(request.responseText);
+            if (response.guthaben !== null) {
+                return response.guthaben.toString();
+            } else {
+                return "Guthaben nicht gefunden";
+            }
+        } else {
+            console.error(`Fehler beim Abrufen des Guthabens: ${request.status}`);
+            return "Fehler beim Abrufen des Guthabens";
+        }
     }
-  }
 
-  function logout(){
-    window.location.href = "login_page.html";
-    sessionStorage.clear('userId');
-    sessionStorage.clear('admin_status');
-  }
 
-  function füllen(){
-      window.location.href="füllen.html";
-  }
+    function fillFieldWithInfo() {
+        var id = sessionStorage.getItem('userId');
+        var guthaben = getGuthabenById(id);
+        var name = getNameById(id);
+        var field = document.getElementById('userinfo_id');
+        field.textContent += 'ID: ' + id;
+        var field = document.getElementById('userinfo_name');
+        field.textContent += 'Name: ' + name;
+        var field = document.getElementById('userinfo_guthaben');
+        field.textContent += 'aktuelles Guthaben: ' + guthaben;
+        field.textContent += "";
+    }
+
+    function onloadFunction() {
+        const userId = sessionStorage.getItem('userId');
+        console.log("userid:" + userId);
+        console.log("adminstatus: " + sessionStorage.getItem('admin_status'));
+        fillFieldWithInfo();
+        if (sessionStorage.getItem('admin_status').toString() === 'false') {
+            const knopf1 = document.getElementById('turnoff1');
+            const knopf2 = document.getElementById('turnoff2');
+            knopf1.disabled = true;
+            knopf2.disabled = true;
+        }
+    }
+
+    function logout() {
+        window.location.href = "login_page.html";
+        sessionStorage.clear('userId');
+        sessionStorage.clear('admin_status');
+    }
+
+    function füllen() {
+        window.location.href = "füllen.html";
+    }
 </script>
 <body onload="onloadFunction()">
-  <div class="container">
+<div class="container">
     <div class="header">
-      <div class="img"></div>
+        <div class="img"></div>
     </div>
     <div class="register">
-      <button id="turnoff1" onclick="window.location.href = 'register.html'"  class="knopf">Benutzer registrieren!</button>
+        <button id="turnoff1" onclick="window.location.href = 'register.html'" class="knopf">Benutzer registrieren!
+        </button>
     </div>
     <div class="userinfo" id="userinfo">
-      <div>Benutzerinformationenen:</div>
-      <div id="userinfo_id"></div>
-      <div id="userinfo_name"></div>
-      <div id="userinfo_guthaben"></div>
+        <div>Benutzerinformationenen:</div>
+        <div id="userinfo_id"></div>
+        <div id="userinfo_name"></div>
+        <div id="userinfo_guthaben"></div>
     </div>
     <div class="fill">
-      <button class="knopf" onclick="füllen()">Flasche füllen!</button>
+        <button class="knopf" onclick="füllen()">Flasche füllen!</button>
     </div>
     <div class="logout">
-      <button class="knopf" onclick="logout()">Logout!</button>
+        <button class="knopf" onclick="logout()">Logout!</button>
     </div>
     <div class="guthaben-aufladen">
-      <button id="turnoff2" onclick="window.location.href='guthaben_aufladen.html'"  class="knopf">Guthaben aufladen!</button>
+        <button id="turnoff2" onclick="window.location.href='guthaben_aufladen.html'" class="knopf">Guthaben aufladen!
+        </button>
     </div>
-  </div>
+</div>
 </body>
 </html>

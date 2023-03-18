@@ -5,36 +5,42 @@
     <title>Login</title>
 </head>
 <link rel="stylesheet" href="style-login.css">
-<script type="text/javascript" >
-          function createUser() {
+<script type="text/javascript">
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            userCheck();
+        }
+    });
 
-                    fetch('/create_user', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ id: id, name: name, guthaben: guthaben })
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            alert('Benutzer erfolgreich erstellt.');
-                        } else {
-                            alert('Fehler beim Erstellen des Benutzers.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Fehler:', error);
-                    });
-          }
+    function createUser() {
 
-        function updateGuthaben() {
-            fetch('/update_guthaben', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ id: id, neues_guthaben: neues_guthaben })
+        fetch('/create_user', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({id: id, name: name, guthaben: guthaben})
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert('Benutzer erfolgreich erstellt.');
+                } else {
+                    alert('Fehler beim Erstellen des Benutzers.');
+                }
             })
+            .catch(error => {
+                console.error('Fehler:', error);
+            });
+    }
+
+    function updateGuthaben() {
+        fetch('/update_guthaben', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({id: id, neues_guthaben: neues_guthaben})
+        })
             .then(response => {
                 if (response.ok) {
                     alert('Guthaben erfolgreich aktualisiert.');
@@ -45,82 +51,82 @@
             .catch(error => {
                 console.error('Fehler:', error);
             });
-        }
+    }
 
-        function setAdminById(id) {
-              const request = new XMLHttpRequest();
-              request.open("GET", `http://127.0.0.1:8000/get_adminstatus_by_id?id=${id}`, false); // dritter Parameter auf false setzt den Request auf synchron
-              request.send();
-              if (request.status === 200) {
-                const response = JSON.parse(request.responseText);
-                console.log('admin_status: '+response.admin);
-                if (response.admin !== null) {
-                    if (response.admin == 1){
-                        sessionStorage.setItem('admin_status', true)
-                    }
-                } else {
-                  return "Guthaben nicht gefunden";
+    function setAdminById(id) {
+        const request = new XMLHttpRequest();
+        request.open("GET", `http://127.0.0.1:8000/get_adminstatus_by_id?id=${id}`, false); // dritter Parameter auf false setzt den Request auf synchron
+        request.send();
+        if (request.status === 200) {
+            const response = JSON.parse(request.responseText);
+            console.log('admin_status: ' + response.admin);
+            if (response.admin !== null) {
+                if (response.admin == 1) {
+                    sessionStorage.setItem('admin_status', true)
                 }
-              } else {
-                console.error(`Fehler beim Abrufen des Guthabens: ${request.status}`);
-                return "Fehler beim Abrufen des Guthabens";
-              }
-}
+            } else {
+                return "Guthaben nicht gefunden";
+            }
+        } else {
+            console.error(`Fehler beim Abrufen des Guthabens: ${request.status}`);
+            return "Fehler beim Abrufen des Guthabens";
+        }
+    }
 
-        async function checkIfUserExists(id) {
-          const response = await fetch(`http://127.0.0.1:8000/check_if_user_exists?id=${id}`);
-          const data = await response.json();
-          setAdminById(id);
-          return data.exists;
-}
+    async function checkIfUserExists(id) {
+        const response = await fetch(`http://127.0.0.1:8000/check_if_user_exists?id=${id}`);
+        const data = await response.json();
+        setAdminById(id);
+        return data.exists;
+    }
 
     function getNameById() {
         fetch(`http://127.0.0.1:8000/check_if_user_exists/${id}`)
-        .then(response => response.text())
-        .then(data => {
-            if (data) {
-                alert(`Der Name des Benutzers lautet: ${data}`);
-            } else {
-                alert('Der Benutzer existiert nicht.');
-            }
-        })
-        .catch(error => {
-            console.error('Fehler:', error);
-        });
+            .then(response => response.text())
+            .then(data => {
+                if (data) {
+                    alert(`Der Name des Benutzers lautet: ${data}`);
+                } else {
+                    alert('Der Benutzer existiert nicht.');
+                }
+            })
+            .catch(error => {
+                console.error('Fehler:', error);
+            });
     }
 
     function getGuthabenById() {
         fetch(`http://127.0.0.1:8000/get_guthaben_by_id?id=${id}`)
-        .then(response => response.text())
-        .then(data => {
-            if (data) {
-                alert(`Das Guthaben des Benutzers beträgt: ${data}`);
-            } else {
-                alert('Der Benutzer existiert nicht.');
-            }
-        })
-        .catch(error => {
-            console.error('Fehler:', error);
-        });
+            .then(response => response.text())
+            .then(data => {
+                if (data) {
+                    alert(`Das Guthaben des Benutzers beträgt: ${data}`);
+                } else {
+                    alert('Der Benutzer existiert nicht.');
+                }
+            })
+            .catch(error => {
+                console.error('Fehler:', error);
+            });
     }
 
-     async function userCheck(){
+    async function userCheck() {
         var id = document.getElementById("eingabe").value;
         const x = await checkIfUserExists(id);
-        console.log("userCheck: " +x);
-        if(x== true){
+        console.log("userCheck: " + x);
+        if (x == true) {
             sessionStorage.setItem('userId', id);
-            console.log('bvsnihjbd: ' +sessionStorage.getItem('admin_status'))
+            console.log('bvsnihjbd: ' + sessionStorage.getItem('admin_status'))
             window.location.href = "main.html";
         }
     }
 
-    function onload_function(){
+    function onload_function() {
         sessionStorage.setItem('admin_status', false);
-          }
+    }
 </script>
 <body onload="onload_function()">
-  <div class="container">
+<div class="container">
     <div class="header">
         <div class="img">
 
@@ -135,7 +141,7 @@
             Login!
         </button>
     </div>
-  </div>
+</div>
 
 </body>
 </html>
