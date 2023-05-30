@@ -37,7 +37,7 @@ async def deactivate_pin_20_endpoint():
 
 @app.post("/create_user")
 async def create_user_endpoint(user_data: dict):
-    conn = sqlite3.connect("identifier.sqlite")
+    conn = sqlite3.connect("../identifier.sqlite")
     zeiger = conn.cursor()
     zeiger.execute("INSERT INTO main.accounts VALUES (?,?,?,?)", (
         user_data['id'], user_data['name'], user_data['guthaben'], user_data['admin']
@@ -49,7 +49,7 @@ async def create_user_endpoint(user_data: dict):
 
 @app.put("/update_guthaben")
 async def update_guthaben_endpoint(user_data: dict):
-    conn = sqlite3.connect("identifier.sqlite")
+    conn = sqlite3.connect("../identifier.sqlite")
     zeiger = conn.cursor()
     zeiger.execute("UPDATE main.accounts SET guthaben = ? WHERE id = ?", (user_data['neues_guthaben'], user_data['id']))
     conn.commit()
@@ -59,7 +59,7 @@ async def update_guthaben_endpoint(user_data: dict):
 
 @app.get("/check_if_user_exists")
 async def check_if_user_exists_endpoint(id: int):
-    conn = sqlite3.connect('identifier.sqlite')
+    conn = sqlite3.connect("../identifier.sqlite")
     cursor = conn.cursor()
     cursor.execute("SELECT EXISTS(SELECT 1 FROM accounts WHERE id = ?)", (id,))
     result = cursor.fetchone()[0]
@@ -69,7 +69,7 @@ async def check_if_user_exists_endpoint(id: int):
 
 @app.get("/get_adminstatus_by_id")
 async def get_name_by_id_endpoint(id: int):
-    conn = sqlite3.connect('identifier.sqlite')
+    conn = sqlite3.connect('../identifier.sqlite')
     cursor = conn.cursor()
     cursor.execute("SELECT admin FROM accounts WHERE id = ?", (id,))
     result = cursor.fetchone()
@@ -79,7 +79,7 @@ async def get_name_by_id_endpoint(id: int):
 
 @app.get("/get_name_by_id")
 async def get_name_by_id_endpoint(id: int):
-    conn = sqlite3.connect('identifier.sqlite')
+    conn = sqlite3.connect('../identifier.sqlite')
     cursor = conn.cursor()
     cursor.execute("SELECT name FROM accounts WHERE id = ?", (id,))
     result = cursor.fetchone()
@@ -89,7 +89,7 @@ async def get_name_by_id_endpoint(id: int):
 
 @app.get("/get_guthaben_by_id")
 async def get_guthaben_by_id_endpoint(id: int):
-    conn = sqlite3.connect('identifier.sqlite')
+    conn = sqlite3.connect('../identifier.sqlite')
     cursor = conn.cursor()
     cursor.execute("SELECT guthaben FROM accounts WHERE id = ?", (id,))
     result = cursor.fetchone()

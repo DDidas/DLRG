@@ -1,8 +1,9 @@
+
 import sqlite3
 
 
 def create_user(id, name, guthaben):
-    conn = sqlite3.connect("identifier.sqlite")
+    conn = sqlite3.connect("../identifier.sqlite")
     zeiger = conn.cursor()
     zeiger.execute("INSERT INTO main.accounts VALUES (?,?,?)", (id, name, guthaben,))
     conn.commit()
@@ -10,7 +11,7 @@ def create_user(id, name, guthaben):
 
 
 def update_guthaben(id, neues_guthaben):
-    conn = sqlite3.connect("identifier.sqlite")
+    conn = sqlite3.connect("../identifier.sqlite")
     zeiger = conn.cursor()
     zeiger.execute("UPDATE main.accounts SET guthaben = ? WHERE id = ?", (neues_guthaben, id))
     conn.commit()
@@ -18,7 +19,7 @@ def update_guthaben(id, neues_guthaben):
 
 
 def check_if_user_exists(id):
-    conn = sqlite3.connect('identifier.sqlite')
+    conn = sqlite3.connect("../identifier.sqlite")
     cursor = conn.cursor()
     cursor.execute("SELECT EXISTS(SELECT 1 FROM accounts WHERE id = ?)", (id,))
     result = cursor.fetchone()[0]
@@ -26,7 +27,7 @@ def check_if_user_exists(id):
     return bool(result)
 
 def get_name_by_id(id):
-    conn = sqlite3.connect('identifier.sqlite')
+    conn = sqlite3.connect('../identifier.sqlite')
     cursor = conn.cursor()
     cursor.execute("SELECT name FROM accounts WHERE id = ?", (id,))
     result = cursor.fetchone()
@@ -34,7 +35,7 @@ def get_name_by_id(id):
     return str(result[0]) if result else None
 
 def get_guthaben_by_id(id):
-    conn = sqlite3.connect('identifier.sqlite')
+    conn = sqlite3.connect('../identifier.sqlite')
     cursor = conn.cursor()
     cursor.execute("SELECT guthaben FROM accounts WHERE id = ?", (id,))
     result = cursor.fetchone()
