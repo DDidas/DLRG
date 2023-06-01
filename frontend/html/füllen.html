@@ -14,11 +14,11 @@
                 return;
             }
             const preis = (200 - restdruck) * flaschengroesse * 0.0017;
-            if (preis > parseFloat(await getGuthabenById(sessionStorage.getItem('userId')))) {
+            /*if (preis > parseFloat(await getGuthabenById(sessionStorage.getItem('userId')))) {
                 document.getElementById("button-update").setAttribute("disabled", "disabled");
             } else {
                 document.getElementById("button-update").removeAttribute("disabled");
-            }
+            }*/
 
             document.getElementById("eingabe").value = preis.toFixed(2);
 
@@ -57,11 +57,11 @@
             const userId = sessionStorage.getItem('userId');
             const currentGuthaben = await getGuthabenById(userId);
             const neuesGuthaben = (parseFloat(currentGuthaben) - preis).toFixed(2).toString().replace(',', '.');
-            if (preis > parseFloat(currentGuthaben)) {
+            /*if (preis > parseFloat(currentGuthaben)) {
                 alert("Nicht genug Guthaben.");
                 window.location.href = "main.html";
                 return;
-            }
+            }*/
             try {
                 const response = await fetch('http://127.0.0.1:8000/update_guthaben', {
                     method: 'PUT',

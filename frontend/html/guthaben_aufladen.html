@@ -3,65 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <title>Guthaben aktualisieren</title>
+    <style>
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .download-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .download-button:hover {
+            background-color: #45a049;
+        }
+
+        .reset-button {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .reset-button:hover {
+            background-color: #d32f2f;
+        }
+    </style>
 </head>
 <link rel="stylesheet" href="../css/style-login.css">
-<script type="text/javascript">
-
-    function getGuthabenById(id) {
-        const request = new XMLHttpRequest();
-        request.open("GET", `http://127.0.0.1:8000/get_guthaben_by_id?id=${id}`, false); // dritter Parameter auf false setzt den Request auf synchron
-        request.send();
-        if (request.status === 200) {
-            const response = JSON.parse(request.responseText);
-            if (response.guthaben !== null) {
-                return response.guthaben.toString();
-            } else {
-                return "Guthaben nicht gefunden";
-            }
-        } else {
-            console.error(`Fehler beim Abrufen des Guthabens: ${request.status}`);
-            return "Fehler beim Abrufen des Guthabens";
-        }
-    }
-
-
-    async function updateGuthaben() {
-        const preisInput = document.getElementById("eingabe");
-        const userIdInput = document.getElementById("userId");
-        const preis = parseFloat(preisInput.value);
-        const userId = userIdInput.value;
-
-        if (isNaN(preis)) { // check if preis is a valid number and greater than zero
-            alert('Bitte geben Sie eine gültige Zahl ein.');
-            preisInput.focus();
-            return;
-        }
-
-        const currentGuthaben = await getGuthabenById(userId);
-        const neuesGuthaben = (parseFloat(currentGuthaben) + parseFloat(preis)).toFixed(2).toString().replace(',', '.');
-        console.log("preis: " + preis + " currentGuthaben: " + currentGuthaben + " neuesGuthaben: " + neuesGuthaben);
-
-        try {
-            const response = await fetch('http://127.0.0.1:8000/update_guthaben', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({id: userId, neues_guthaben: neuesGuthaben})
-            });
-            if (response.ok) {
-                window.location.href = "main.html";
-            } else {
-                alert('Fehler beim Aktualisieren des Guthabens.');
-            }
-        } catch (error) {
-            console.error(`Fehler beim Aktualisieren des Guthabens: ${error}`);
-            alert('Fehler beim Aktualisieren des Guthabens.');
-        }
-    }
-
-
-</script>
 <body>
 <div class="container">
     <div class="header">
@@ -69,16 +48,57 @@
 
         </div>
     </div>
-    <div class="input">
-        <input class="eingabe" id="eingabe" type="number" min="0" step="0.01" placeholder="Betrag eingeben"></input>
-        <input class="eingabe" id="userId" type="text" placeholder="ID eingeben"></input>
-    </div>
-
-    <div class="button">
-        <button id="knopf4" onclick="updateGuthaben()">
-            Guthaben aufladen!
+    <div class="button-container">
+        <button id="downloadButton" class="download-button" onclick="downloadCSV()">
+            Download CSV
+        </button>
+        <button id="resetButton" class="reset-button" onclick="resetGuthaben()">
+            Reset Guthaben
         </button>
     </div>
 </div>
+<script type="text/javascript">
+
+    async function downloadCSV() {
+        try {
+            const response = await fetch('http://127.0.0.1:8000/export_users_csv');
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'users.csv';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.location.href = "main.html";
+            } else {
+                alert('Fehler beim Herunterladen der CSV-Datei.');
+            }
+        } catch (error) {
+            console.error(`Fehler beim Herunterladen der CSV-Datei: ${error}`);
+            alert('Fehler beim Herunterladen der CSV-Datei.');
+        }
+    }
+
+    async function resetGuthaben() {
+        if (confirm('Are you sure you want to reset the Guthaben?')) {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/reset_guthaben');
+                if (response.ok) {
+                    alert('Guthaben erfolgreich zurückgesetzt.');
+                    window.location.href = "main.html";
+                } else {
+                    alert('Fehler beim Zurücksetzen des Guthabens.');
+                }
+            } catch (error) {
+                console.error(`Fehler beim Zurücksetzen des Guthabens: ${error}`);
+                alert('Fehler beim Zurücksetzen des Guthabens.');
+            }
+        }
+    }
+
+
+</script>
 </body>
 </html>

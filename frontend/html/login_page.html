@@ -5,53 +5,13 @@
     <title>Login</title>
 </head>
 <link rel="stylesheet" href="../css/style-login.css">
+1
 <script type="text/javascript">
     document.addEventListener('keydown', function (event) {
         if (event.key === 'Enter') {
             userCheck();
         }
     });
-
-    function createUser() {
-
-        fetch('/create_user', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({id: id, name: name, guthaben: guthaben})
-        })
-            .then(response => {
-                if (response.ok) {
-                    alert('Benutzer erfolgreich erstellt.');
-                } else {
-                    alert('Fehler beim Erstellen des Benutzers.');
-                }
-            })
-            .catch(error => {
-                console.error('Fehler:', error);
-            });
-    }
-
-    function updateGuthaben() {
-        fetch('/update_guthaben', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({id: id, neues_guthaben: neues_guthaben})
-        })
-            .then(response => {
-                if (response.ok) {
-                    alert('Guthaben erfolgreich aktualisiert.');
-                } else {
-                    alert('Fehler beim Aktualisieren des Guthabens.');
-                }
-            })
-            .catch(error => {
-                console.error('Fehler:', error);
-            });
-    }
 
     function setAdminById(id) {
         const request = new XMLHttpRequest();
@@ -80,35 +40,6 @@
         return data.exists;
     }
 
-    function getNameById() {
-        fetch(`http://127.0.0.1:8000/check_if_user_exists/${id}`)
-            .then(response => response.text())
-            .then(data => {
-                if (data) {
-                    alert(`Der Name des Benutzers lautet: ${data}`);
-                } else {
-                    alert('Der Benutzer existiert nicht.');
-                }
-            })
-            .catch(error => {
-                console.error('Fehler:', error);
-            });
-    }
-
-    function getGuthabenById() {
-        fetch(`http://127.0.0.1:8000/get_guthaben_by_id?id=${id}`)
-            .then(response => response.text())
-            .then(data => {
-                if (data) {
-                    alert(`Das Guthaben des Benutzers beträgt: ${data}`);
-                } else {
-                    alert('Der Benutzer existiert nicht.');
-                }
-            })
-            .catch(error => {
-                console.error('Fehler:', error);
-            });
-    }
 
     async function userCheck() {
         var id = document.getElementById("eingabe").value;
@@ -118,7 +49,14 @@
             sessionStorage.setItem('userId', id);
             console.log('bvsnihjbd: ' + sessionStorage.getItem('admin_status'))
             window.location.href = "main.html";
+            //loadContentInIframe("main.html")
         }
+    }
+
+    function loadContentInIframe(url) {
+        // Get the iframe element in the parent window (launcher.html)
+        const iframe = window.parent.document.getElementById('content-container').querySelector('iframe');
+        iframe.src = url;
     }
 
     function onload_function() {

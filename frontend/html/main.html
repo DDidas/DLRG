@@ -50,7 +50,7 @@
         var field = document.getElementById('userinfo_name');
         field.textContent += 'Name: ' + name;
         var field = document.getElementById('userinfo_guthaben');
-        field.textContent += 'aktuelles Guthaben: ' + guthaben;
+        field.textContent += 'Aktueller Abrechnungszeitraum: ' + guthaben * -1 + "€";
         field.textContent += "";
     }
 
@@ -76,6 +76,7 @@
     function füllen() {
         window.location.href = "füllen.html";
     }
+
 </script>
 <body onload="onloadFunction()">
 <div class="container">
@@ -99,7 +100,7 @@
         <button class="knopf" onclick="logout()">Logout!</button>
     </div>
     <div class="guthaben-aufladen">
-        <button id="turnoff2" onclick="window.location.href='guthaben_aufladen.html'" class="knopf">Guthaben aufladen!
+        <button id="turnoff2" onclick="window.location.href='guthaben_aufladen.html'" class="knopf">Datenexport
         </button>
     </div>
 </div>

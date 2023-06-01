@@ -10,12 +10,11 @@
     async function createUser() {
         var id = document.getElementById("id").value;
         var name = document.getElementById("name").value;
-        var guthaben = document.getElementById("guthaben").value;
         var admin = document.getElementById("admin").value;
         admin = (admin == "JA") ? 1 : 0; // Umwandlung in Ganzzahl
 
         // Form validation
-        if (!id || !name || !guthaben) {
+        if (!id || !name ) {
             alert("Please fill in all fields.");
             return;
         }
@@ -41,7 +40,6 @@
             body: JSON.stringify({
                 "id": id,
                 "name": name,
-                "guthaben": guthaben,
                 "admin": admin
             })
         });
@@ -69,7 +67,6 @@
     <div class="input">
         <input placeholder="ID" id="id" class="eingabe" type="number" autofocus></input>
         <input placeholder="Name" id="name" class="eingabe" type="text"></input>
-        <input placeholder="Guthaben" id="guthaben" class="eingabe" type="number"></input>
         <label for="admin" style="color: #ffed00; font-size: 200%">Admin:</label>
         <select id="admin" class="auswahl">
             <option value="NEIN">NEIN</option>
