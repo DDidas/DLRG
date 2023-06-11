@@ -51,6 +51,25 @@
                 return "Fehler beim Abrufen des Guthabens";
             }
         }
+        async function logAction(action) {
+            const userId = sessionStorage.getItem('userId');
+            const name = sessionStorage.getItem('name');
+            try {
+                const response = await fetch('http://127.0.0.1:8000/log_action', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({name: name, action: action})
+                });
+                if (!response.ok) {
+                    console.error(`Error logging action: ${response.status}`);
+                }
+            } catch (error) {
+                console.error(`Error logging action: ${error}`);
+            }
+        }
+
 
         async function updateGuthaben() {
             const preis = parseFloat(document.getElementById("eingabe").value);
@@ -71,6 +90,7 @@
                     body: JSON.stringify({id: userId, neues_guthaben: neuesGuthaben})
                 });
                 if (response.ok) {
+                    await logAction(`Gefüllt für: ${preis} €`);
                     document.getElementById('button-update').innerText = "fertig gefüllt";
                     document.getElementById('button-update').setAttribute('onclick', 'fertig_gefüllt()');
                     fill();

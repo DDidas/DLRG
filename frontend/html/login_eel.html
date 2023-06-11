@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<link rel="stylesheet" href="../css/style-login.css">
+
+<body onload="onload_function()">
+<div class="container">
+    <div class="header">
+        <div class="img">
+
+        </div>
+    </div>
+    <div class="input">
+        <input placeholder="Chip-ID" id="eingabe" type="number" autofocus></input>
+    </div>
+
+    <div class="button">
+        <button id="knopf" onclick="userCheck()">
+            Login!
+        </button>
+    </div>
+</div>
+
+<script src="/eel.js"></script> <!-- include the eel.js library -->
+<script type="text/javascript">
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            userCheck();
+        }
+    });
+
+    async function setAdminById(id) {
+        const adminStatus = await eel.get_adminstatus_by_id(id)();
+        console.log('admin_status: ' + adminStatus.admin);
+        if (adminStatus.admin !== null) {
+            if (adminStatus.admin == 1) {
+                sessionStorage.setItem('admin_status', true)
+            }
+        } else {
+            return "Admin Status not found";
+        }
+    }
+
+    async function checkIfUserExists(id) {
+        const exists = await eel.check_if_user_exists(id)();
+        await setAdminById(id);
+        return exists.exists;
+    }
+
+    async function userCheck() {
+        var id = document.getElementById("eingabe").value;
+        const x = await checkIfUserExists(id);
+        console.log("userCheck: " + x);
+        if (x == true) {
+            sessionStorage.setItem('userId', id);
+            console.log('bvsnihjbd: ' + sessionStorage.getItem('admin_status'))
+            window.location.href = "main_eel.html";
+        }
+    }
+
+    function onload_function() {
+        sessionStorage.setItem('admin_status', false);
+    }
+</script>
+
+</body>
+</html>

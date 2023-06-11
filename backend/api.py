@@ -20,7 +20,7 @@ app = FastAPI()
 # Add middleware for CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*", "/Users/daviddidas/Desktop/DLRG_KOMPRESSOR/frontend/html"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -124,6 +124,25 @@ async def export_users_csv_endpoint():
     return FileResponse(filename, filename="users.csv", media_type='text/csv')
 
 
+@app.get("/export_log_csv")
+async def export_users_csv_endpoint():
+    conn = sqlite3.connect('../identifier.sqlite')
+    cursor = conn.cursor()
+    cursor.execute("SELECT date, name , price FROM logbuch")
+    results = cursor.fetchall()
+    conn.close()
+
+    # Create a temporary file to store the CSV data
+    filename = "logbuch.csv"
+    with open(filename, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["Name", "Guthaben"])  # Write header
+        writer.writerows(results)  # Write user data rows
+
+    # Return the CSV file as a download
+    return FileResponse(filename, filename="logbuch.csv", media_type='text/csv')
+
+
 @app.get("/reset_guthaben")
 async def reset_guthaben_endpoint():
     conn = sqlite3.connect('../identifier.sqlite')
@@ -131,7 +150,7 @@ async def reset_guthaben_endpoint():
 
     # Create a new table with the name "abrechnung_" + current date
     today = datetime.datetime.today()
-    table_name = "abrechnung_" + today.strftime("%Y%m%d%H%M%S")
+    table_name = "abrechnung_" + today.strftime('%Y-%m-%d %H:%M:%S')
     cursor.execute(f"CREATE TABLE {table_name} AS SELECT * FROM main.accounts")
 
     # Set guthaben of all users to 0
@@ -140,3 +159,18 @@ async def reset_guthaben_endpoint():
     conn.commit()
     conn.close()
     return {"message": f"Guthaben reset and table {table_name} created successfully"}
+
+
+@app.post("/log_action")
+async def log_action_endpoint(action_data: dict):
+    # connect to the SQLite database
+    conn = sqlite3.connect('../identifier.sqlite')
+    cursor = conn.cursor()
+
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    cursor.execute("INSERT INTO logbuch (name, price, date) VALUES (?, ?, ?)",
+                   (action_data['name'], action_data['action'], timestamp))
+
+    conn.commit()
+    cursor.close()
+    return {"message": f"Action logged successfully"}

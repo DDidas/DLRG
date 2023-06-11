@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Guthaben aktualisieren</title>
+    <link rel="stylesheet" href="../css/style-login.css">
+    <script type="text/javascript" src="/eel.js"></script>  <!-- Include eel.js -->
+    <style>
+        #logbuchTable {
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        #logbuchTable th {
+            padding: 15px 20px;
+            background-color: #4A4A4A;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        #logbuchTable td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #logbuchTable tr:nth-child(odd) {
+            background-color: #FFFFFF;
+        }
+
+        #logbuchTable tr:nth-child(even) {
+            background-color: #F5F5F5;
+        }
+
+        #logbuchTable tr:hover {
+            background-color: #f4f4f4;
+        }
+
+        #logbuchContainer {
+            overflow-y: auto;
+            height: 400px; /* Adjust this to your desired height */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            border: 1px solid #ddd;
+            width: 1000px;
+            margin-left: 5%;
+        }
+
+        #logbuchContainer button {
+            background-color: #17a2b8;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            display: block;
+            margin: 10px 0;
+        }
+
+        #logbuchContainer button:hover {
+            background-color: #138496;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .download-button, .reset-button, #showLogbuchButton {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .download-button:hover, .reset-button:hover, #showLogbuchButton:hover {
+            background-color: #0069d9;
+        }
+
+        .reset-button {
+            background-color: #dc3545;
+        }
+
+        .reset-button:hover {
+            background-color: #c82333;
+        }
+
+    </style>
+    <script type="text/javascript">
+        async function downloadCSV() {
+            try {
+                const currentDate = new Date();
+                const formattedDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1)
+                    .toString()
+                    .padStart(2, '0')}-${currentDate
+                    .getDate()
+                    .toString()
+                    .padStart(2, '0')}-${currentDate.getHours().toString().padStart(2, '0')}-${currentDate
+                    .getMinutes()
+                    .toString()
+                    .padStart(2, '0')}-${currentDate.getSeconds().toString().padStart(2, '0')}`;
+
+                const options = {
+                    types: [
+                        {
+                            description: "CSV files",
+                            accept: {
+                                "text/csv": [".csv"],
+                            },
+                        },
+                    ],
+                    suggestedName: `Abrechnung_${formattedDate}.csv`,
+                };
+
+                const handle = await window.showSaveFilePicker(options);
+                const writable = await handle.createWritable();
+
+                const csvString = await eel.export_users_csv()();
+                await writable.write(csvString);
+
+                await writable.close();
+
+                window.location.href = "main_eel.html";
+            } catch (error) {
+                console.error(`Fehler beim Herunterladen der CSV-Datei: ${error}`);
+                alert('Fehler beim Herunterladen der CSV-Datei.');
+            }
+        }
+
+
+        async function resetGuthaben() {
+            if (confirm('Are you sure you want to reset the Guthaben?')) {
+                try {
+                    const response = await eel.reset_guthaben()();  // Use eel instead of fetch
+                    if (response.message) {
+                        alert('Guthaben erfolgreich zurückgesetzt.');
+                        window.location.href = "main_eel.html";
+                    } else {
+                        alert('Fehler beim Zurücksetzen des Guthabens.');
+                    }
+                } catch (error) {
+                    console.error(`Fehler beim Zurücksetzen des Guthabens: ${error}`);
+                    alert('Fehler beim Zurücksetzen des Guthabens.');
+                }
+            }
+        }
+
+        async function showLogbuch() {
+            try {
+                const logbuchEntries = await eel.get_logbuch_entries()();
+                const logbuchContainer = document.getElementById('logbuchContainer');
+                const logbuchTable = document.getElementById('logbuchTable');
+
+                // Clear any existing entries
+                while (logbuchTable.firstChild) {
+                    logbuchTable.removeChild(logbuchTable.firstChild);
+                }
+
+                // Add a header row
+                const headerRow = document.createElement('tr');
+                ['Name', 'Preis', 'Datum'].forEach(headerText => {
+                    const th = document.createElement('th');
+                    th.textContent = headerText;
+                    headerRow.appendChild(th);
+                });
+                logbuchTable.appendChild(headerRow);
+
+                // Add the logbook entries
+                logbuchEntries.forEach(([name, price, date]) => {
+                    const tr = document.createElement('tr');
+
+                    [name, price, date].forEach(text => {
+                        const td = document.createElement('td');
+                        td.textContent = text;
+                        tr.appendChild(td);
+                    });
+
+                    logbuchTable.appendChild(tr);
+                });
+
+                // Show the logbook
+                logbuchContainer.style.display = 'block';
+            } catch (error) {
+                console.error(`Fehler beim Abrufen der Logbuch-Einträge: ${error}`);
+                alert('Fehler beim Abrufen der Logbuch-Einträge.');
+            }
+        }
+
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="img"></div>
+    </div>
+    <div class="button-container">
+        <div>
+            <button id="downloadButton" class="download-button" onclick="downloadCSV()">
+                Kassenbericht runterladen
+            </button>
+            <button id="resetButton" class="reset-button" onclick="resetGuthaben()">
+                Kassenbericht zurücksetzen
+            </button>
+            <button id="showLogbuchButton" class="download-button" onclick="showLogbuch()">
+                Logbuch anzeigen
+            </button>
+            <button onclick="window.location.href='main_eel.html'" class="download-button">
+                Back to main
+            </button>
+        </div>
+        <div id="logbuchContainer" style="display: none;">
+
+            <table id="logbuchTable">
+                <!-- The logbook entries will be inserted here -->
+            </table>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

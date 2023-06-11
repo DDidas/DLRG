@@ -5,61 +5,57 @@
     <title>Title</title>
     <link rel="stylesheet" href="../css/style-main.css">
 </head>
+<script type="text/javascript" src="/eel.js"></script>
 <script type="text/javascript">
-    function getNameById(id) {
-        const request = new XMLHttpRequest();
-        request.open("GET", `http://127.0.0.1:8000/get_name_by_id?id=${id}`, false); // dritter Parameter auf false setzt den Request auf synchron
-        request.send();
-        if (request.status === 200) {
-            const response = JSON.parse(request.responseText);
+    async function getNameById(id) {
+        try {
+            const response = await eel.get_name_by_id(id)();
             if (response.name !== null) {
                 return response.name.toString();
             } else {
                 return "Name nicht gefunden";
             }
-        } else {
-            console.error(`Fehler beim Abrufen des Namens: ${request.status}`);
+        } catch (error) {
+            console.error(`Fehler beim Abrufen des Namens: ${error}`);
             return "Fehler beim Abrufen des Namens";
         }
     }
 
-    function getGuthabenById(id) {
-        const request = new XMLHttpRequest();
-        request.open("GET", `http://127.0.0.1:8000/get_guthaben_by_id?id=${id}`, false); // dritter Parameter auf false setzt den Request auf synchron
-        request.send();
-        if (request.status === 200) {
-            const response = JSON.parse(request.responseText);
+    async function getGuthabenById(id) {
+        try {
+            const response = await eel.get_guthaben_by_id(id)();
             if (response.guthaben !== null) {
-                return response.guthaben.toString();
+                return response.guthaben;
             } else {
-                return "Guthaben nicht gefunden";
+                // Handle None value returned from the backend
+                console.error("Guthaben not found for user id " + id);
+                return "0";
             }
-        } else {
-            console.error(`Fehler beim Abrufen des Guthabens: ${request.status}`);
-            return "Fehler beim Abrufen des Guthabens";
+        } catch (error) {
+            console.error(`Fehler beim Abrufen des Guthabens: ${error}`);
+            return "0";
         }
     }
 
 
-    function fillFieldWithInfo() {
+    async function fillFieldWithInfo() {
         var id = sessionStorage.getItem('userId');
-        var guthaben = getGuthabenById(id);
-        var name = getNameById(id);
-        sessionStorage.setItem('name',name)
+        var guthaben = await getGuthabenById(id);
+        var name = await getNameById(id);
+        sessionStorage.setItem('name', name)
         var field = document.getElementById('userinfo_id');
         field.textContent += 'ID: ' + id;
         var field = document.getElementById('userinfo_name');
         field.textContent += 'Name: ' + name;
         var field = document.getElementById('userinfo_guthaben');
         field.textContent += 'Aktueller Abrechnungszeitraum: ' + guthaben * -1 + "€";
-        field.textContent += "";
     }
 
-    function onloadFunction() {
+    async function onloadFunction() {
         const userId = sessionStorage.getItem('userId');
         console.log("userid:" + userId);
         console.log("adminstatus: " + sessionStorage.getItem('admin_status'));
-        fillFieldWithInfo();
+        await fillFieldWithInfo();
         if (sessionStorage.getItem('admin_status').toString() === 'false') {
             const knopf1 = document.getElementById('turnoff1');
             const knopf2 = document.getElementById('turnoff2');
@@ -69,13 +65,13 @@
     }
 
     function logout() {
-        window.location.href = "login_page.html";
+        window.location.href = "login_eel.html";
         sessionStorage.clear('userId');
         sessionStorage.clear('admin_status');
     }
 
-    function füllen() {
-        window.location.href = "füllen.html";
+    function fuellen() {
+        window.location.href = "füllen_eel.html";
     }
 
 </script>
@@ -85,7 +81,7 @@
         <div class="img"></div>
     </div>
     <div class="register">
-        <button id="turnoff1" onclick="window.location.href = 'register.html'" class="knopf">Benutzer registrieren!
+        <button id="turnoff1" onclick="window.location.href = 'register_eel.html'" class="knopf">Benutzer registrieren!
         </button>
     </div>
     <div class="userinfo" id="userinfo">
@@ -95,13 +91,13 @@
         <div id="userinfo_guthaben"></div>
     </div>
     <div class="fill">
-        <button class="knopf" onclick="füllen()">Flasche füllen!</button>
+        <button class="knopf" onclick="fuellen()"> Füllen</button>
     </div>
     <div class="logout">
-        <button class="knopf" onclick="logout()">Logout!</button>
+        <button class="knopf" onclick="logout()">Logout</button>
     </div>
     <div class="guthaben-aufladen">
-        <button id="turnoff2" onclick="window.location.href='guthaben_aufladen.html'" class="knopf">Datenexport
+        <button id="turnoff2" onclick="window.location.href='verwaltung_eel.html'" class="knopf">Datenexport
         </button>
     </div>
 </div>

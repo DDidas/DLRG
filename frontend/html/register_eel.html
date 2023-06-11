@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create User</title>
+    <link rel="stylesheet" href="../css/style-register.css">
+    <script type="text/javascript" src="/eel.js"></script>  <!-- Include eel.js -->
+    <script type="text/javascript">
+        async function createUser() {
+            var id = document.getElementById("id").value;
+            var name = document.getElementById("name").value;
+            var admin = document.getElementById("admin").value;
+            admin = (admin == "JA") ? 1 : 0; // Convert to integer
+
+            // Form validation
+            if (!id || !name) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            const checkUserData = await eel.check_if_user_exists(id)();  // Use eel instead of fetch
+
+            if (checkUserData.exists) {
+                alert("User with this ID already exists.");
+                return;
+            }
+
+            const response = await eel.create_user({"id": id, "name": name, "admin": admin})();  // Use eel instead of fetch
+
+            if (response.message) {
+                alert(response.message);
+                window.location.href = "main_eel.html";
+            } else {
+                alert("Error creating user");
+            }
+        }
+
+        function cancel() {
+            window.location.href = "main_eel.html";
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="img"></div>
+    </div>
+    <div class="input">
+        <input placeholder="ID" id="id" class="eingabe" type="number" autofocus></input>
+        <input placeholder="Name" id="name" class="eingabe" type="text"></input>
+        <label for="admin" style="color: #ffed00; font-size: 200%">Admin:</label>
+        <select id="admin" class="auswahl">
+            <option value="NEIN">NEIN</option>
+            <option value="JA">JA</option>
+        </select>
+    </div>
+
+    <div class="button1">
+        <button id="knopf" class="button" onclick="createUser()">
+            Erstelle Benutzer!
+        </button>
+    </div>
+    <div class="button2">
+        <button id="knopf" class="button" onclick="cancel()">
+            Zurück!
+        </button>
+    </div>
+</div>
+</body>
+</html>
