@@ -5,11 +5,11 @@ import sqlite3
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 
-# set up the GPIO pin
-# GPIO.setmode(GPIO.BCM)
-# GPIO.setup(20, GPIO.OUT)
+set up the GPIO pin
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(20, GPIO.OUT)
 
 DATABASE_PATH = os.path.abspath("identifier.sqlite")
 
@@ -18,7 +18,7 @@ app = FastAPI()
 # Add middleware for CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -27,13 +27,13 @@ app.add_middleware(
 
 @app.post("/activate_pin_20")
 async def activate_pin_20_endpoint():
-    # GPIO.output(20, GPIO.HIGH)
+    GPIO.output(20, GPIO.HIGH)
     return {"message": "Pin 20 activated successfully"}
 
 
 @app.post("/deactivate_pin_20")
 async def deactivate_pin_20_endpoint():
-    # GPIO.output(20, GPIO.LOW)
+    GPIO.output(20, GPIO.LOW)
     return {"message": "Pin 20 deactivated successfully"}
 
 
