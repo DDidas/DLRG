@@ -1,0 +1,19 @@
+{
+  "name": "dlrg_kompressor",
+  "version": "1.0.0",
+  "description": "This project is an ingenious blend of hardware control and user interface design developed on behalf of the German Lifesaving Organization (DLRG), district St. Wendels. The DLRG Air Compressor Payment System offers a practical solution for regulating the flow of air in compressors while simultaneously integrating a seamless payment method.",
+  "main": "main.js",
+  "scripts": {
+    "start": "concurrently \"npm run start-fastapi\" \"npm run start-electron\"",
+    "start-fastapi": "uvicorn backend.api:app --host localhost --port 8000",
+    "start-electron": "electron ."
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^25.4.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
