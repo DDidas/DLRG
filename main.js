@@ -4,7 +4,7 @@ const { spawn } = require('child_process');
 
 function startFastAPI() {
     // Replace "/usr/local/bin/npm" with the absolute path of npm on your system
-    const npmPath = "/usr/local/bin/npm";
+    const npmPath = "/opt/homebrew/bin/npm";
 
     // Spawn the FastAPI server process using the absolute path of npm
     const fastAPIProcess = spawn(npmPath, ['run', 'start-fastapi']);
